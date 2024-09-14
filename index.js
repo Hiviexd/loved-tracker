@@ -37,7 +37,13 @@ async function sendWebhook(row) {
 async function fetchAndProcessSheet() {
     const doc = new GoogleSpreadsheet(SHEET_ID, { apiKey: API_KEY });
 
+    console.log("Authenticating with Google Sheets API...");
+
     await doc.loadInfo();
+
+    // timeout 5s
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     const sheet = doc.sheetsByTitle[SHEET_NAME];
 
     const rows = await sheet.getRows();
