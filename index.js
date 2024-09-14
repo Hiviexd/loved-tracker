@@ -1,6 +1,6 @@
-const { GoogleSpreadsheet } = require("google-spreadsheet");
-const axios = require("axios");
-const config = require("./config.json");
+import { GoogleSpreadsheet } from "google-spreadsheet";
+import axios from "axios";
+import config from "./config.json" assert { type: "json" };
 
 const API_KEY = config.apiKey;
 const SHEET_ID = config.sheetId;
@@ -56,4 +56,4 @@ async function fetchAndProcessSheet() {
     console.log("Done!");
 }
 
-fetchAndProcessSheet().catch(console.error);
+await fetchAndProcessSheet().catch(console.error);
