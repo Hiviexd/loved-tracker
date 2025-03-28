@@ -11,7 +11,9 @@ const DISCORD_PINGS = config.discordPings;
 async function sendWebhook(row) {
     console.log(`Sending webhook for user ${row[1]}`);
 
-    const pingString = DISCORD_PINGS.map((ping) => `<@${ping}>`).join(" ").trim();
+    const pingString = DISCORD_PINGS.map((ping) => `<@${ping}>`)
+        .join(" ")
+        .trim();
 
     const embed = {
         description: `[**${row[1]}**](https://osu.ppy.sh/users/${row[0]}) needs a tenure badge update! :tada: \n\`\`\`${row[4]}\`\`\``,
@@ -41,8 +43,8 @@ async function fetchAndProcessSheet() {
 
     await doc.loadInfo();
 
-    // timeout 5s
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // timeout 15s
+    await new Promise((resolve) => setTimeout(resolve, 15 * 1000));
 
     const sheet = doc.sheetsByTitle[SHEET_NAME];
 
