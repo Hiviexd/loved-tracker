@@ -1,5 +1,6 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import axios from "axios";
+import utils from "./lib/utils.js";
 import config from "./config.json" assert { type: "json" };
 
 const API_KEY = config.apiKey;
@@ -8,12 +9,8 @@ const SHEET_NAME = config.sheetName;
 const WEBHOOK_URL = config.webhookUrl;
 const DISCORD_PINGS = config.discordPings;
 
-async function timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 async function sendWebhook(row) {
-    console.log(`Sending webhook for user ${row[1]}`);
+    utils.consoleLog(`Sending webhook for user ${row[1]}`);
 
     const pingString = DISCORD_PINGS.map((ping) => `<@${ping}>`)
         .join(" ")
@@ -33,33 +30,35 @@ async function sendWebhook(row) {
             embeds: [embed],
         });
     } catch (error) {
-        console.error("Failed to send webhook: ", error);
+        utils.consoleError(`Failed to send webhook: ${error}`);
     } finally {
         // 1s timeout
-        await timeout(1000);
+        await utils.timeout(1000);
     }
 }
 
 async function fetchAndProcessSheet() {
     const doc = new GoogleSpreadsheet(SHEET_ID, { apiKey: API_KEY });
 
-    console.log("Authenticating with Google Sheets API...");
+    utils.consoleLog("Authenticating with Google Sheets API...");
 
     await doc.loadInfo();
 
     // 15s timeout to give the command cells time to load
-    await timeout(15 * 1000);
+    await utils.timeout(15 * 1000);
 
     const sheet = doc.sheetsByTitle[SHEET_NAME];
 
     const rows = await sheet.getRows();
 
     // 10s timeout for extra safety
-    await timeout(10 * 1000);
+    await utils.timeout(10 * 1000);
 
-    console.log("Processing Project Loved tenures...");
+    utils.consoleLog("Processing Project Loved tenures...");
 
     const blacklistedRowData = ["loading...", "loading", "...", "null", "n/a"];
+
+    let hasProcessed = false;
 
     // start from row 3 (index 2)
     for (let i = 2; i < rows.length; i++) {
@@ -67,12 +66,34 @@ async function fetchAndProcessSheet() {
 
         if (!blacklistedRowData.includes(row._rawData[4].toLowerCase())) {
             await sendWebhook(row._rawData);
+            hasProcessed = true;
         } else {
-            console.log(`Skipping row ${i} (user: ${row[1]}) because command cell seems invalid: ${row._rawData[4]}`);
+            utils.consoleWarn(
+                `Skipping row ${i} (user: ${row._rawData[1]}) because command cell seems invalid: ${row._rawData[4]}`
+            );
         }
     }
 
-    console.log("Done!");
+    utils.consoleCheck("Done processing badges!");
+
+    // send done webhook if processed
+    if (hasProcessed) {
+        const doneEmbed = {
+            description: "✅ Done processing badges!",
+            color: parseInt("2ecc70", 16), // #2ecc70
+        };
+
+        // sleep for 3s because fuck me I guess
+        await utils.timeout(3 * 1000);
+
+        try {
+            await axios.post(WEBHOOK_URL, {
+                embeds: [doneEmbed],
+            });
+        } catch (error) {
+            utils.consoleError(`Failed to send done webhook: ${error}`);
+        }
+    }
 }
 
 await fetchAndProcessSheet().catch(console.error);
