@@ -56,7 +56,7 @@ async function fetchAndProcessSheet() {
 
     utils.consoleLog("Processing Project Loved tenures...");
 
-    const blacklistedRowData = ["loading...", "loading", "...", "null", "n/a"];
+    const blacklistedRowData = ["loading...", "loading", "...", "null", "n/a", "#name", "#ref", "#err"];
 
     let hasProcessed = false;
 
