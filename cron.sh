@@ -1,6 +1,10 @@
 #!/bin/bash
-# Add paths where pnpm/node live
-export PATH=/usr/local/bin:/usr/bin:/bin:/home/hivie/.local/share/pnpm:/home/hivie/.nvm/versions/node/$(node -v)/bin:$PATH
 
-cd /home/hivie/scripts/loved-tracker
-$(which pnpm) start >> /home/hivie/scripts/loved-tracker/logs/cronjob.log 2>&1
+USER_HOME=$HOME
+CURRENT_USER=$(whoami)
+
+export PATH=/usr/local/bin:/usr/bin:/bin:$USER_HOME/.local/share/pnpm:$USER_HOME/.nvm/versions/node/$(node -v 2>/dev/null)/bin:$PATH
+
+cd "$USER_HOME/scripts/loved-tracker"
+
+$(command -v pnpm) start >> "$USER_HOME/scripts/loved-tracker/logs/cronjob.log" 2>&1
