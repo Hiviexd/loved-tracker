@@ -6,13 +6,21 @@ this script is intended to be run as a cronjob.
 
 ## setup
 
-1. have node.js
+1. have node.js and pnpm installed
 2. clone the repo
-3. `yarn`
+3. `pnpm install`
 4. create a `config.json` based on `config.example.json`:
    - `apiKey`: your google sheets api key
    - `sheetId`: the id of the spreadsheet you want to track
    - `sheetName`: the name of the sheet you want to track
    - `webhookUrl`: the url of the discord webhook you want to send notifications through
    - `discordPings`: a string array of discord user ids to ping when a notification is sent
-5. `yarn start`
+5. `pnpm start`
+
+### cronjob setup
+
+for personal reference:
+
+```bash
+0 18 * * * cd ~/scripts/loved-tracker && pnpm start >> logs/cronjob.log 2>&1
+```
