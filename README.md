@@ -16,11 +16,3 @@ this script is intended to be run as a cronjob.
    - `webhookUrl`: the url of the discord webhook you want to send notifications through
    - `discordPings`: a string array of discord user ids to ping when a notification is sent
 5. `pnpm start`
-
-### cronjob setup
-
-for personal reference:
-
-```bash
-0 18 * * * cd ~/scripts/loved-tracker && pnpm start >> logs/cronjob.log 2>&1
-```
