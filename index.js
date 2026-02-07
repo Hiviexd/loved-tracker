@@ -16,14 +16,14 @@ const logWebhook = new StatefulWebhook(LOG_WEBHOOK_URL, {
 });
 
 async function fetchAndProcessSheet() {
-    await utils.consoleLog("Processing Project Loved tenures...", logWebhook);
+    await utils.logInfo("Processing Project Loved tenures...", logWebhook);
 
     const doc = new GoogleSpreadsheet(SHEET_ID, { apiKey: API_KEY });
 
-    await utils.consoleLog("Authenticating with Google Sheets API...", logWebhook);
+    await utils.logInfo("Authenticating with Google Sheets API...", logWebhook);
 
     await doc.loadInfo().catch(async (error) => {
-        await utils.consoleError(`Failed to authenticate with Google Sheets API: ${error}`, logWebhook);
+        await utils.logError(`Failed to authenticate with Google Sheets API: ${error}`, logWebhook);
         return null;
     });
 
@@ -33,16 +33,16 @@ async function fetchAndProcessSheet() {
     const sheet = doc.sheetsByTitle[SHEET_NAME];
 
     const rows = await sheet.getRows().catch(async (error) => {
-        await utils.consoleError(`Failed to get rows from Google Sheets: ${error}`, logWebhook);
+        await utils.logError(`Failed to get rows from Google Sheets: ${error}`, logWebhook);
         return [];
     });
 
-    await utils.consoleCheck(`Found ${rows.length} rows in sheet`, logWebhook);
+    await utils.logSuccess(`Found ${rows.length} rows in sheet`, logWebhook);
 
     // 10s timeout for extra safety
     await utils.timeout(10 * 1000);
 
-    await utils.consoleLog("Starting process...", logWebhook);
+    await utils.logInfo("Starting process...", logWebhook);
 
     let badgeCount = 0;
 
@@ -66,14 +66,14 @@ async function fetchAndProcessSheet() {
             });
             badgeCount++;
         } else if (cell !== "...") {
-            await utils.consoleWarn(
+            await utils.logWarning(
                 `Skipping row ${i} (user: ${row._rawData[1]}) because command cell seems invalid: \`${row._rawData[4]}\``,
                 logWebhook,
             );
         }
     }
 
-    await utils.consoleCheck(`Processed ${badgeCount} badges!`, logWebhook, {
+    await utils.logSuccess(`Processed ${badgeCount} badges!`, logWebhook, {
         color: parseInt("2ecc70", 16), // #2ecc70 when finished
     });
 }
