@@ -2,6 +2,7 @@
     "apiKey": "",
     "sheetId": "",
     "sheetName": "",
-    "webhookUrl": "",
+    "pingWebhookUrl": "",
+    "logWebhookUrl": "",
     "discordPings": [""]
 }

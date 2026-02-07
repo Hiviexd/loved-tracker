@@ -13,6 +13,7 @@ this script is intended to be run as a cronjob.
    - `apiKey`: your google sheets api key
    - `sheetId`: the id of the spreadsheet you want to track
    - `sheetName`: the name of the sheet you want to track
-   - `webhookUrl`: the url of the discord webhook you want to send notifications through
+   - `pingWebhookUrl`: the url of the discord webhook you want to send badge notifications through
+   - `logWebhookUrl`: the url of the discord webhook you want to send logs through
    - `discordPings`: a string array of discord user ids to ping when a notification is sent
-5. `pnpm start`
+5. `pnpm start` / `node index.js`
