@@ -6,11 +6,12 @@ import config from "./config.json" with { type: "json" };
 const API_KEY = config.apiKey;
 const SHEET_ID = config.sheetId;
 const SHEET_NAME = config.sheetName;
-const WEBHOOK_URL = config.webhookUrl;
+const PING_WEBHOOK_URL = config.pingWebhookUrl;
+const LOG_WEBHOOK_URL = config.logWebhookUrl;
 const DISCORD_PINGS = config.discordPings;
 
 // Stateful webhook for script logs (console + Discord)
-const logWebhook = new StatefulWebhook(WEBHOOK_URL, {
+const logWebhook = new StatefulWebhook(LOG_WEBHOOK_URL, {
     baseEmbed: { color: parseInt("3498db", 16) }, // #3498db
 });
 
@@ -41,7 +42,7 @@ async function fetchAndProcessSheet() {
     // 10s timeout for extra safety
     await utils.timeout(10 * 1000);
 
-    await utils.consoleLog("Processing Project Loved tenures...", logWebhook);
+    await utils.consoleLog("Starting process...", logWebhook);
 
     let badgeCount = 0;
 
@@ -56,12 +57,18 @@ async function fetchAndProcessSheet() {
 
         const cell = row._rawData[4].toLowerCase();
         if (!blacklistedRowData.includes(cell)) {
-            await sendBadgeWebhook(logWebhook, DISCORD_PINGS, row._rawData, sheetRowUrl);
+            await sendBadgeWebhook({
+                logWebhook,
+                pingWebhookUrl: PING_WEBHOOK_URL,
+                discordPings: DISCORD_PINGS,
+                row: row._rawData,
+                sheetRowUrl,
+            });
             badgeCount++;
         } else if (cell !== "...") {
             await utils.consoleWarn(
                 `Skipping row ${i} (user: ${row._rawData[1]}) because command cell seems invalid: \`${row._rawData[4]}\``,
-                logWebhook
+                logWebhook,
             );
         }
     }
